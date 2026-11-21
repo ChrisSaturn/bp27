@@ -1,0 +1,71 @@
+{
+  "parser": "Acorn 8.18.0",
+  "artifacts": [
+    {
+      "source": "gradient-ascii.js",
+      "output": "gradient-ascii.compact.js",
+      "sourceType": "script",
+      "sourceSha256": "4722655ce267185e16141aa58f7ffb718ef2491a3ed769c2fd08c0585b4cc1a9",
+      "outputSha256": "5baddddc06493b3ed840b61f2ce9d248c214c92fa2b085835a79c617bc5b24ec",
+      "bytesBefore": 31226,
+      "bytesAfter": 27202,
+      "gzipBefore": 9357,
+      "gzipAfter": 8971
+    },
+    {
+      "source": "hyper-text.js",
+      "output": "hyper-text.compact.js",
+      "sourceType": "script",
+      "sourceSha256": "3500633bacdb397491ed51a1323efa3fdb6b5b60c34182d95de277db06aa4c73",
+      "outputSha256": "40f68c1d3cb4d86be5be395cccbb0e717c0d1eb3f0529acc7bbbc2c75d165c3d",
+      "bytesBefore": 4173,
+      "bytesAfter": 3484,
+      "gzipBefore": 1433,
+      "gzipAfter": 1347
+    },
+    {
+      "source": "pack-material-data.js",
+      "output": "pack-material-data.compact.js",
+      "sourceType": "module",
+      "sourceSha256": "61e1fa6107bbf4bc5c7a79026e960c5bd29a22cedfaed123e7c59ca492a68b12",
+      "outputSha256": "7d9a1880847308632c1a9029b5d4125b3b630278741cd0103c645c4d203d11e8",
+      "bytesBefore": 5471,
+      "bytesAfter": 4900,
+      "gzipBefore": 1930,
+      "gzipAfter": 1855
+    },
+    {
+      "source": "pack-renderer.js",
+      "output": "pack-renderer.compact.js",
+      "sourceType": "script",
+      "sourceSha256": "36d8a986274b61632e8ebeb7bbb7d34e9204afb5f4340cbdfc721f3768bce2eb",
+      "outputSha256": "55923e1b8e3c3c288c0a1ec083085ee586203fc26e450f218028de8b95e56f36",
+      "bytesBefore": 18889,
+      "bytesAfter": 17276,
+      "gzipBefore": 6568,
+      "gzipAfter": 6333
+    },
+    {
+      "source": "pack-sound.js",
+      "output": "pack-sound.compact.js",
+      "sourceType": "script",
+      "sourceSha256": "8469a0d6f03e0f64be72d9a6b350455accc1846fbf316d64e7321edd8262ed5d",
+      "outputSha256": "316b1b2a68569b796c88599ce137d735b40ab7724cd9d6c414d015c62fbc2872",
+      "bytesBefore": 2942,
+      "bytesAfter": 2466,
+      "gzipBefore": 1015,
+      "gzipAfter": 951
+    },
+    {
+      "source": "packs.js",
+      "output": "packs.compact.js",
+      "sourceType": "script",
+      "sourceSha256": "8384e27aa69a84226410a1add735144f0361a27ea4daf3818eb1b52e6a6fd496",
+      "outputSha256": "fe0d81abea254ea3a9f6273a6668af1bc7e0d887c8760188f07bde3ff68e0f66",
+      "bytesBefore": 12322,
+      "bytesAfter": 10276,
+      "gzipBefore": 3602,
+      "gzipAfter": 3363
+    }
+  ]
+}

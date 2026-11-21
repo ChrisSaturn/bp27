@@ -1,0 +1,100 @@
+[
+  {
+    "url": "/",
+    "bytes": 4684,
+    "contentEncoding": "gzip",
+    "cacheControl": "no-cache",
+    "byteIntegrity": true
+  },
+  {
+    "url": "assets/ABCFavorit-Bold.woff2?v=9a86b3395d",
+    "bytes": 34968,
+    "contentEncoding": "identity",
+    "cacheControl": "public, max-age=31536000, immutable",
+    "byteIntegrity": true
+  },
+  {
+    "url": "assets/ABCFavorit-Regular.woff2?v=e710aa021d",
+    "bytes": 33808,
+    "contentEncoding": "identity",
+    "cacheControl": "public, max-age=31536000, immutable",
+    "byteIntegrity": true
+  },
+  {
+    "url": "assets/bp27-header@2x.png?v=52da4d3c6e",
+    "bytes": 2491,
+    "contentEncoding": "identity",
+    "cacheControl": "public, max-age=31536000, immutable",
+    "byteIntegrity": true
+  },
+  {
+    "url": "assets/bp27-header@3x.png?v=597133c63f",
+    "bytes": 3854,
+    "contentEncoding": "identity",
+    "cacheControl": "public, max-age=31536000, immutable",
+    "byteIntegrity": true
+  },
+  {
+    "url": "assets/bp27.png?v=3b8ce97314",
+    "bytes": 14117,
+    "contentEncoding": "identity",
+    "cacheControl": "public, max-age=31536000, immutable",
+    "byteIntegrity": true
+  },
+  {
+    "url": "assets/breakpoint-icon.png?v=7d2610cbe9",
+    "bytes": 1043,
+    "contentEncoding": "identity",
+    "cacheControl": "public, max-age=31536000, immutable",
+    "byteIntegrity": true
+  },
+  {
+    "url": "assets/solana.svg?v=b8f701403a",
+    "bytes": 1036,
+    "contentEncoding": "gzip",
+    "cacheControl": "public, max-age=31536000, immutable",
+    "byteIntegrity": true
+  },
+  {
+    "url": "gradient-ascii.compact.js?v=5baddddc06",
+    "bytes": 8881,
+    "contentEncoding": "gzip",
+    "cacheControl": "public, max-age=31536000, immutable",
+    "byteIntegrity": true
+  },
+  {
+    "url": "hyper-text.compact.js?v=40f68c1d3c",
+    "bytes": 1340,
+    "contentEncoding": "gzip",
+    "cacheControl": "public, max-age=31536000, immutable",
+    "byteIntegrity": true
+  },
+  {
+    "url": "pack-material-data.js?v=61e1fa6107",
+    "bytes": 1925,
+    "contentEncoding": "gzip",
+    "cacheControl": "public, max-age=31536000, immutable",
+    "byteIntegrity": true
+  },
+  {
+    "url": "pack-renderer.compact.js?v=55923e1b8e",
+    "bytes": 6264,
+    "contentEncoding": "gzip",
+    "cacheControl": "public, max-age=31536000, immutable",
+    "byteIntegrity": true
+  },
+  {
+    "url": "pack-sound.compact.js?v=316b1b2a68",
+    "bytes": 955,
+    "contentEncoding": "gzip",
+    "cacheControl": "public, max-age=31536000, immutable",
+    "byteIntegrity": true
+  },
+  {
+    "url": "packs.compact.js?v=fe0d81abea",
+    "bytes": 3345,
+    "contentEncoding": "gzip",
+    "cacheControl": "public, max-age=31536000, immutable",
+    "byteIntegrity": true
+  }
+]

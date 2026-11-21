@@ -1,0 +1,83 @@
+{
+  "baseline": {
+    "mobile": {
+      "score": 79,
+      "metrics": {
+        "first-contentful-paint": 1081.554,
+        "largest-contentful-paint": 1831.554,
+        "total-blocking-time": 864.8885,
+        "cumulative-layout-shift": 1.0893732258177383e-05,
+        "speed-index": 1120.54300539649
+      }
+    },
+    "desktop": {
+      "score": 95,
+      "metrics": {
+        "first-contentful-paint": 295.31,
+        "largest-contentful-paint": 405.31000000000006,
+        "total-blocking-time": 177,
+        "cumulative-layout-shift": 9.093989437969783e-06,
+        "speed-index": 387.294145592771
+      }
+    }
+  },
+  "mobile": {
+    "runs": [
+      {
+        "score": 99,
+        "metrics": {
+          "first-contentful-paint": 805.2289000000001,
+          "largest-contentful-paint": 1580.2289,
+          "total-blocking-time": 128.38554999999997,
+          "cumulative-layout-shift": 2.1923636169581986e-05,
+          "speed-index": 908.8761988459294
+        }
+      },
+      {
+        "score": 99,
+        "metrics": {
+          "first-contentful-paint": 846.8954000000001,
+          "largest-contentful-paint": 1584.8953999999999,
+          "total-blocking-time": 100.05230000000006,
+          "cumulative-layout-shift": 1.4706538548539468e-05,
+          "speed-index": 878.6145267462077
+        }
+      },
+      {
+        "score": 100,
+        "metrics": {
+          "first-contentful-paint": 976.856,
+          "largest-contentful-paint": 1581.8560000000002,
+          "total-blocking-time": 20,
+          "cumulative-layout-shift": 1.0893732258177383e-05,
+          "speed-index": 976.856
+        }
+      }
+    ],
+    "medianScore": 99.0,
+    "medianMetrics": {
+      "first-contentful-paint": 846.8954000000001,
+      "largest-contentful-paint": 1581.8560000000002,
+      "total-blocking-time": 100.05230000000006,
+      "cumulative-layout-shift": 1.4706538548539468e-05,
+      "speed-index": 908.8761988459294
+    }
+  },
+  "desktop": {
+    "score": 100,
+    "metrics": {
+      "first-contentful-paint": 214.6452,
+      "largest-contentful-paint": 384.64520000000005,
+      "total-blocking-time": 0,
+      "cumulative-layout-shift": 1.8187978875939565e-05,
+      "speed-index": 308.8750499842346
+    }
+  },
+  "resolvedAudits": [
+    "render-blocking-insight",
+    "cache-insight",
+    "image-delivery-insight",
+    "document-latency-insight",
+    "unminified-javascript"
+  ]
+}

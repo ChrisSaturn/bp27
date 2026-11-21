@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="earn a $500 ticket for $100" />
+    <title>BP27 — earn a $500 ticket for $100</title>
+    <link rel="icon" type="image/png" href="assets/breakpoint-icon.png?v=7d2610cbe9" />
+    <link rel="preload" href="assets/ABCFavorit-Regular.woff2?v=e710aa021d" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="assets/ABCFavorit-Bold.woff2?v=9a86b3395d" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="gradient-ascii.compact.js?v=5baddddc06" as="script" />
+    <!-- bp27:styles:start -->
+    <style id="site-styles">
+@font-face {
+  font-family: "ABC Favorit";
+  src: url("assets/ABCFavorit-Regular.woff2?v=e710aa021d") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "ABC Favorit";
+  src: url("assets/ABCFavorit-Bold.woff2?v=9a86b3395d") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+:root {
+  color-scheme: dark;
+  font-family: "ABC Favorit", Arial, sans-serif;
+  color: #ffffff;
+  background: #000000;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+* { box-sizing: border-box; }
+body { margin: 0; }
+button { font: inherit; }
+button:focus-visible { outline: none; }
+::selection { color: #000000; background: #aa67fb; }
+.stage {
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  overflow: hidden;
+  padding: 3rem 0 2rem;
+  background: #000000;
+}
+.gradient-ascii-container {
+  position: absolute;
+  z-index: -1;
+  inset: 48% 0 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: .6;
+  mask-image: linear-gradient(transparent 0%, #000 65%);
+  background: linear-gradient(#000000, #26133e);
+}
+.gradient-ascii-canvas { display: block; width: 100%; height: 100%; }
+.brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7.12px;
+  height: 20px;
+}
+.brand img { display: block; width: 104.45px; height: auto; }
+.brand .bp27-header { height: 20px; }
+.brand .solana-logo { width: 22.6812px; }
+.headline { position: relative; text-align: center; margin: clamp(4rem, 10vh, 7rem) 1rem 0; }
+h1 {
+  margin: 0;
+  font-size: clamp(1.5rem, 3.8vw, 3.25rem);
+  font-weight: 400;
+  line-height: 1.25;
+  letter-spacing: -0.035em;
+  white-space: nowrap;
+}
+h1 strong { font-weight: 700; }
+.hyper-character { display: inline-block; text-align: center; }
+.packs { margin-top: clamp(2.75rem, 7vh, 4.5rem); }
+.pack-rail {
+  position: relative;
+  width: min(100%, 1080px);
+  height: 420px;
+  margin-inline: auto;
+  overflow: hidden;
+  perspective: 1000px;
+  mask-image:
+    linear-gradient(90deg, transparent 0%, transparent 8%, #00000020 16%, #00000080 24%, #000 34%, #000 66%, #00000080 76%, #00000020 84%, transparent 92%, transparent 100%),
+    linear-gradient(transparent, #000 12%, #000 85%, transparent);
+  mask-composite: intersect;
+  -webkit-mask-composite: source-in;
+  touch-action: pan-y;
+  cursor: grab;
+}
+.pack-rail:active { cursor: grabbing; }
+.pack-cylinder {
+  position: absolute;
+  inset: 0;
+  --radius: 400px;
+  transform-style: preserve-3d;
+  transform: translateZ(calc(-1 * var(--radius))) rotateX(-4deg) rotateY(var(--rotation, 0deg));
+}
+.pack-choice {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 184px;
+  height: 292px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #ffffff;
+  cursor: pointer;
+  --foil: #d88aff;
+  --foil-dark: #6724e8;
+  transform: translate(-50%, -50%) rotateY(var(--orbit-angle)) translateZ(var(--radius)) translateY(calc(-6px * var(--center-weight, 0))) scale(var(--center-scale, 1));
+}
+.pack-art {
+  position: relative;
+  display: flex;
+  height: 292px;
+  flex-direction: column;
+  align-items: center;
+  overflow: hidden;
+  background: linear-gradient(105deg, var(--foil-dark), var(--foil) 32%, var(--foil-dark) 48%, var(--foil) 70%, var(--foil-dark));
+  border: 1px solid #ffffff50;
+  clip-path: var(--pack-silhouette);
+}
+.pack-art::before {
+  content: "";
+  position: absolute;
+  inset: 14px 0;
+  background: linear-gradient(125deg, transparent 25%, #ffffff40 26%, transparent 27%, transparent 60%, #ffffff30 61%, transparent 62%);
+  pointer-events: none;
+}
+.pack-seal { width: 100%; height: 18px; flex-shrink: 0; background: repeating-linear-gradient(90deg, #a369cf 0 2px, #c493e0 4px, #9156bc 8px, #a369cf 12px); border-block: 1px solid #d3a7ee70; box-shadow: inset 0 2px 0 #a369cf, inset 0 -2px 0 #a369cf; }
+.pack-wordmark { width: 112px; height: auto; margin-top: 19px; }
+.pack-motif { display: grid; place-items: center; height: 158px; font: 100px/1 Arial, sans-serif; color: #ffffffdb; }
+.pack-edition { font-size: 16px; letter-spacing: .01em; }
+.pack-bottom { margin-top: 9px; font: 9px/1 monospace; letter-spacing: .1em; opacity: .75; }
+.pack-seal-bottom { position: absolute; bottom: 0; border-top: 1px solid #ffffff55; }
+.pack-controls { display: flex; align-items: center; flex-direction: column; gap: 1rem; margin-top: .5rem; }
+.open-pack { min-width: 108px; min-height: 38px; padding: .55rem 1.25rem; border: 1px solid #ffffff55; border-radius: 999px; background: #ffffff; color: #0b0710; font-size: 14px; font-weight: 700; cursor: pointer; transition: background .16s ease, transform .16s ease, box-shadow .16s ease; }
+.open-pack:hover:not(:disabled) { background: #eee0ff; transform: translateY(-2px); box-shadow: 0 4px 14px #d3a6ff26; }
+.open-pack:active:not(:disabled) { transform: translateY(0) scale(.98); }
+.open-pack:disabled { opacity: .6; cursor: wait; }
+.is-opening .pack-object { animation: open-foil .7s ease both; }
+@keyframes open-foil { 25% { transform: rotate(-5deg); } 50% { transform: rotate(5deg) scale(1.06); } 100% { transform: translateY(-12px) scale(.95); opacity: .1; } }
+.reveal-dialog { width: min(360px, calc(100vw - 40px)); padding: 0; border: 1px solid #ffffff40; border-radius: 18px; background: #0d0913; color: #ffffff; }
+.reveal-dialog::backdrop { background: #000000c9; backdrop-filter: blur(6px); }
+.close-reveal { position: absolute; right: 12px; top: 10px; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 50%; color: #fff; background: #ffffff14; font-size: 24px; cursor: pointer; }
+.ticket { padding: 48px 30px 28px; text-align: left; background: linear-gradient(160deg, #ffffff0a, transparent); }
+.ticket img { display: block; max-width: 70%; height: auto; }
+.ticket-rule { height: 1px; background: #ffffff30; margin: 32px 0 24px; }
+.ticket-label { color: var(--ticket-accent); font-size: 14px; }
+.ticket h2 { font-size: 48px; font-weight: 400; letter-spacing: -.05em; margin: 12px 0; }
+.ticket-caption { font-size: 15px; line-height: 1.5; color: #ffffffa0; }
+.ticket-perforation { border-top: 1px dashed #ffffff40; margin: 36px -30px 20px; }
+.ticket-footnote { font-size: 12px; color: #ffffff80; }
+@media (max-width: 600px) {
+  .stage { padding-top: 2rem; }
+  .headline { margin-top: 4rem; }
+  h1 { font-size: clamp(1.1rem, 5.7vw, 1.5rem); }
+  .packs { margin-top: 2.75rem; }
+  .pack-rail { height: 360px; }
+  .pack-choice { width: 160px; height: 250px; }
+  .pack-art { height: 250px; }
+  .pack-motif { height: 130px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pack-choice { transition: none; }
+  .is-opening .pack-object { animation: none; }
+}
+
+.pack-actions { display: flex; align-items: center; gap: .6rem; }
+.shuffle-pack { display: grid; place-items: center; width: 44px; height: 44px; padding: 10px; border: 0; background: transparent; color: #ffffff; cursor: pointer; }
+.shuffle-pack:hover { color: #e4d4ff; }
+.shuffle-pack:disabled { opacity: .6; cursor: wait; }
+.shuffle-pack.is-shuffling svg { animation: none; }
+@keyframes dice-turn { to { transform: rotate(180deg); } }
+.selection-status { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.ticket h2 { font-size: 39px; }
+@media (prefers-reduced-motion: reduce) { .shuffle-pack.is-shuffling svg { animation: none; } }
+
+.pack-object {
+  --pack-silhouette: polygon(0 0, 100% 0, 99.5% 6%, 98.5% 12%, 98% 20%, 98.5% 50%, 98% 80%, 98.5% 88%, 99.5% 94%, 100% 100%, 0 100%, .5% 94%, 1.5% 88%, 2% 80%, 1.5% 50%, 2% 20%, 1.5% 12%, .5% 6%);
+  position: relative;
+  display: block;
+  height: 292px;
+  transform-style: preserve-3d;
+  transform: perspective(900px) translateY(var(--hover-lift, 0px)) rotateX(var(--tilt-x, 0deg)) rotateY(calc(var(--rest-y, -8deg) + var(--tilt-y, 0deg))) scale(var(--hover-scale, 1));
+  transition: transform .3s cubic-bezier(.22, 1, .36, 1);
+}
+.is-hovering .pack-object { transition: transform .3s cubic-bezier(.22, 1, .36, 1); }
+.pack-art { transform: translateZ(4px); backface-visibility: hidden; }
+.pack-back {
+  clip-path: var(--pack-silhouette);
+  position: absolute;
+  inset: 0;
+  border: 1px solid #d0b4f255;
+  background: linear-gradient(100deg, #511cb9, #c35bff, #6c28d8);
+  transform: rotateY(180deg) translateZ(4px);
+  backface-visibility: hidden;
+}
+.pack-side {
+  position: absolute;
+  right: -4px;
+  top: 2px;
+  bottom: 2px;
+  width: 8px;
+  background: linear-gradient(90deg, #271334, #be94e9 45%, #513366);
+  transform: rotateY(90deg);
+  border-block: 1px solid #d6b4ff80;
+}
+.pack-object::before {
+  content: "";
+  position: absolute;
+  left: -4px;
+  top: 2px;
+  bottom: 2px;
+  width: 8px;
+  background: linear-gradient(90deg, #29163c, #b688d8, #43265c);
+  transform: rotateY(90deg);
+}
+.pack-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at var(--light-x, 35%) var(--light-y, 20%), #ffffff28, transparent 65%);
+  pointer-events: none;
+}
+.pack-wordmark, .pack-motif, .pack-edition {
+  transform: translate(var(--parallax-x, 0px), var(--parallax-y, 0px));
+  transition: transform .15s ease-out;
+}
+@media (max-width: 600px) { .pack-object { height: 250px; } }
+@media (prefers-reduced-motion: reduce) {
+  .pack-object, .is-hovering .pack-object, .pack-wordmark, .pack-motif, .pack-edition { transition: none; }
+}
+
+/* Filtering the 3D root would flatten its side faces. */
+.pack-choice { filter: drop-shadow(0 18px 15px #00000050); }
+.brand, .headline { position: relative; z-index: 2; }
+.packs { position: relative; z-index: 1; }
+/* Keep animated glyph repaints on their own layer above the 3D scene. */
+.headline { transform: translateZ(0); }
+.hyper-text { display: inline-block; }
+
+.open-pack:focus-visible { background: #d8b8ff; box-shadow: inset 0 -2px 0 #9465bc; }
+.shuffle-pack { position: relative; }
+.shuffle-pack:focus-visible { color: #d8b8ff; }
+.shuffle-pack:focus-visible::after { content: ""; position: absolute; bottom: 3px; width: 12px; height: 2px; border-radius: 1px; background: currentColor; }
+.pack-choice:focus-visible .pack-seal { background: #e3c9ff; }
+.close-reveal:focus-visible { background: #ffffff35; }
+@media (prefers-reduced-motion: reduce) {
+  .open-pack { transition: none; }
+  .open-pack:hover:not(:disabled), .open-pack:active:not(:disabled) { transform: none; }
+}
+.headline-prefix { display: inline-block; white-space: pre; }
+.headline-price { display: inline-block; position: relative; width: 4.5ch; text-align: left; font-variant-numeric: tabular-nums; }
+.headline-price.is-typing::after { content: ""; display: inline-block; height: .8em; width: 2px; margin-left: 3px; background: currentColor; vertical-align: -.02em; animation: typing-caret .6s steps(1) infinite; }
+@keyframes typing-caret { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .headline-price.is-typing::after { animation: none; display: none; } }
+
+.pack-mesh-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
+.has-pack-mesh .pack-object { display: none; }
+
+.pack-rail, .pack-rail * { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.pack-rail img { -webkit-user-drag: none; }
+
+@media (max-width: 600px) {
+  .pack-rail {
+    mask-image:
+      linear-gradient(90deg, transparent 0%, #00000020 5%, #00000066 12%, #000000cc 20%, #000 26%, #000 74%, #000000cc 80%, #00000066 88%, #00000020 95%, transparent 100%),
+      linear-gradient(transparent, #000 12%, #000 85%, transparent);
+  }
+}
+</style>
+    <!-- bp27:styles:end -->
+    <script src="hyper-text.compact.js?v=40f68c1d3c" defer></script>
+    <script src="gradient-ascii.compact.js?v=5baddddc06" defer></script>
+    <script src="pack-sound.compact.js?v=316b1b2a68" defer></script>
+    <script src="pack-renderer.compact.js?v=55923e1b8e" defer></script>
+    <script src="packs.compact.js?v=fe0d81abea" defer></script>
+  </head>
+  <body>
+    <main class="stage">
+      <div class="gradient-ascii-container" aria-hidden="true"><canvas class="gradient-ascii-canvas"></canvas></div>
+      <div class="brand">
+        <img class="solana-logo" src="assets/solana.svg?v=b8f701403a" alt="Solana" width="23" height="20" />
+        <img
+          class="bp27-header"
+          src="assets/bp27-header@2x.png?v=52da4d3c6e"
+          srcset="assets/bp27-header@2x.png?v=52da4d3c6e 2x, assets/bp27-header@3x.png?v=597133c63f 3x"
+          alt="BP27"
+          width="209"
+          height="40"
+          fetchpriority="high"
+        />
+      </div>
+      <div class="headline">
+        <h1 aria-label="earn a $500 ticket for $100"><span class="hyper-text" aria-hidden="true"><span class="headline-prefix">earn a <strong class="headline-value">$500</strong> ticket for </span><strong class="headline-price">$100</strong></span></h1>
+      </div>
+      <section class="packs" aria-label="Breakpoint packs">
+        <div class="pack-rail" role="group" aria-label="Choose a pack"></div>
+        <div class="pack-controls">
+          <div class="pack-actions">
+            <button class="open-pack" type="button">Open pack</button>
+            <button class="shuffle-pack" type="button" aria-label="Pick a random pack">
+              <svg viewBox="0 0 24 24" width="24" height="24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="2.4"/><g fill="currentColor"><circle cx="8" cy="8" r="1.6"/><circle cx="16" cy="8" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="8" cy="16" r="1.6"/><circle cx="16" cy="16" r="1.6"/></g></svg>
+            </button>
+          </div>
+          <span class="selection-status" role="status" aria-live="polite"></span>
+        </div>
+      </section>
+    </main>
+    <dialog class="reveal-dialog" aria-labelledby="reveal-title">
+      <button class="close-reveal" type="button" aria-label="Close ticket">×</button>
+      <div class="ticket">
+        <img src="assets/bp27-header@2x.png?v=52da4d3c6e" srcset="assets/bp27-header@2x.png?v=52da4d3c6e 209w, assets/bp27-header@3x.png?v=597133c63f 314w" sizes="157px" width="157" height="30" alt="BP27" />
+        <div class="ticket-rule"></div>
+        <p class="ticket-label">San Francisco · 2027</p>
+        <h2 id="reveal-title">Breakpoint 2027</h2>
+        <p class="ticket-caption">San Francisco</p>
+        <div class="ticket-perforation"></div>
+        <p class="ticket-footnote">8–10 September 2027</p>
+      </div>
+    </dialog>
+  </body>
+</html>
