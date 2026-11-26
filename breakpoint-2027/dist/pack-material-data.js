@@ -1,3 +1,4 @@
+(() => {
 async function makeGeometry(yieldTask) {
   const vertices=[];
   const indices=[];
@@ -104,7 +105,7 @@ async function makeInkNormal({heights,w,h},yieldTask) {
     return {data,w,h};
 }
 
-export function buildMaterialData(kind,input,yieldTask) {
+function buildMaterialData(kind,input,yieldTask) {
   if(kind==='geometry') return makeGeometry(yieldTask);
   if(kind==='foil') return makeFoilNormal(yieldTask);
   if(kind==='ink') return makeInkNormal(input,yieldTask);
@@ -121,4 +122,7 @@ if(typeof WorkerGlobalScope!=='undefined' && self instanceof WorkerGlobalScope) 
       self.postMessage({id,error:String(error)});
     }
   });
+} else {
+  window.buildPackMaterialData = buildMaterialData;
 }
+})();

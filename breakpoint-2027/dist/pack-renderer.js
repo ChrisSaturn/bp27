@@ -12,10 +12,12 @@
   let disposed = false;
   let width = 1;
   let height = 1;
+  let packScaleX = 1;
+  let packScaleY = 1;
   const textures = [];
-  const opening = new Map();
   const hoverStates = new Map();
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  const mobile = matchMedia('(max-width: 600px)');
   let lastDraw = 0;
   let cylinder;
   let buttons;
@@ -25,6 +27,7 @@
   let lastRotation;
   let lastRadius;
   let materialVersion;
+  let opening;
   const readProperty = (element, name, fallback = 0) => {
     const value = parseFloat(element.style.getPropertyValue(name));
     return Number.isFinite(value) ? value : fallback;
@@ -81,9 +84,18 @@
     uniform float uOpacity;
     uniform float uFocus;
     uniform float uHover;
+    uniform float uTearSide;
+    uniform float uTearLight;
+    uniform float uBlackout;
     uniform vec2 uLight;
     out vec4 outColor;
     void main() {
+      float tear = vUv.y - (.24 + (.5 - vUv.x) * .105 + .012 * (1.0 - abs(2.0 * fract(vUv.x * 7.0) - 1.0)));
+      if (uTearSide * tear < 0.0) discard;
+      if (uBlackout >= 1.0) {
+        outColor = vec4(0.0, 0.0, 0.0, uOpacity);
+        return;
+      }
       vec4 material = texture(uNormalMap, vUv);
       vec3 tangent = normalize(vTangent - dot(vTangent, vNormal) * vNormal);
       vec3 bitangent = normalize(cross(vNormal, tangent));
@@ -113,21 +125,36 @@
       float sheen = exp(-pow(sweep / 0.2, 2.0));
       color += vec3(0.8,0.66,1.0) * sheen * uHover * 0.22 * (1.0 - whiteInk * 0.85);
       color += uFocus*vec3(0.09,0.06,0.12);
-      outColor = vec4(color,uOpacity);
+      color += uTearLight * vec3(.25,.14,.3) * (1.0 - smoothstep(0.0,.2,abs(tear)));
+      outColor = vec4(color * (1.0 - uBlackout),uOpacity);
     }`;
-  const dataUrl=new URL('pack-material-data.js?v=61e1fa6107',document.currentScript.src);
+  const dataUrl=new URL('pack-material-data.js?v=79578ef5d3',document.currentScript.src);
   const yieldTask=async()=>{
     if(globalThis.scheduler?.yield) await globalThis.scheduler.yield();
     else await new Promise(resolve=>setTimeout(resolve,0));
     if(disposed || gl.isContextLost()) throw new Error('Pack initialization canceled');
   };
   let worker;
-  let fallbackModule;
+  let fallbackData;
   let jobId=0;
   const jobs=new Map();
+  const loadFallback = () => new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = dataUrl.href;
+    script.onload = () => {
+      resolve(window.buildPackMaterialData);
+      delete window.buildPackMaterialData;
+      script.remove();
+    };
+    script.onerror = () => {
+      script.remove();
+      reject(new Error('Pack material fallback unavailable'));
+    };
+    document.head.append(script);
+  });
   const fallbackJob=job=>{
-    (fallbackModule ||= import(dataUrl.href))
-      .then(module=>module.buildMaterialData(job.kind,job.input,yieldTask))
+    (fallbackData ||= loadFallback())
+      .then(build=>build(job.kind,job.input,yieldTask))
       .then(job.resolve,job.reject);
   };
   const stopWorker=()=>{worker?.terminate();worker=undefined;};
@@ -137,15 +164,15 @@
     for(const job of pending) fallbackJob(job);
   };
   try {
-    worker=new Worker(dataUrl,{type:'module'});
-    worker.addEventListener('message',({data})=>{
+    if(dataUrl.protocol!=='file:') worker=new Worker(dataUrl);
+    worker?.addEventListener('message',({data})=>{
       const job=jobs.get(data.id);
       if(!job) return;
       if(data.error) {workerFailed();return;}
       jobs.delete(data.id);job.resolve(data.result);
     });
-    worker.addEventListener('error',event=>{event.preventDefault();workerFailed();});
-    worker.addEventListener('messageerror',workerFailed);
+    worker?.addEventListener('error',event=>{event.preventDefault();workerFailed();});
+    worker?.addEventListener('messageerror',workerFailed);
   } catch {stopWorker();}
   const materialJob=(kind,input)=>new Promise((resolve,reject)=>{
     if(disposed) {reject(new Error('Pack initialization canceled'));return;}
@@ -290,9 +317,8 @@
       orbitMatrices=buttons.map((_,index)=>rotateY(radians(index*360/buttons.length)));
     }
     const radius=parseFloat(cylinder.style.getPropertyValue('--radius'))||400;
-    if(!needsDraw && !settling && !opening.size && rotation===lastRotation && radius===lastRadius) return;
+    if(!opening && !needsDraw && !settling && rotation===lastRotation && radius===lastRadius) return;
     needsDraw=false;settling=false;lastRotation=rotation;lastRadius=radius;
-    const mobile=width<=600;
     const base= multiply(multiply(translate(0,0,-radius),rotateX(radians(-4))),rotateY(radians(rotation)));
     gl.viewport(0,0,canvas.width,canvas.height);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     gl.uniform2f(uniforms.uViewport,width,height);
@@ -301,7 +327,10 @@
     lastDraw=now;
     const blend=reducedMotion.matches?1:1-Math.exp(-dt/0.09);
     const draws=buttons.map((button,index)=> {
-      let alpha=parseFloat(button.style.opacity)||0;
+      if(button.classList.contains('is-revealed')) return null;
+      const pose = opening?.button === button ? opening.pose : undefined;
+      if(opening?.flashing && !pose) return null;
+      const alpha = readProperty(button, '--pack-opacity') * (pose ? 1 : 1 - (opening?.pose.focus ?? 0) * .91);
       if(alpha<.005) return null;
       const center=parseFloat(button.style.getPropertyValue('--center-weight'))||0;
       const emphasis=parseFloat(button.style.getPropertyValue('--center-scale'))||1;
@@ -318,30 +347,65 @@
       let model=multiply(base,translate(0,-height*.04,0));
       model=multiply(model,orbitMatrices[index]);
       model=multiply(model,translate(0,-6*center-12*state.hover,radius+8*state.hover));
-      const dimensions=mobile?[160/184,250/292,160/184]:[1,1,1];
-      model=multiply(model,scale(...dimensions.map(v=>v*emphasis*(1+state.hover*0.045))));
+      const size=emphasis*(1+state.hover*0.045);
+      model=multiply(model,scale(packScaleX*size,packScaleY*size,packScaleX*size));
+      if(pose) {
+        model=multiply(model,translate(pose.x,pose.y,pose.z));
+        model=multiply(model,scale(pose.scale,pose.scale,pose.scale));
+        model=multiply(model,rotateZ(radians(pose.roll)));
+      }
       model=multiply(model,rotateX(radians(tiltX)));
-      model=multiply(model,rotateY(radians(-8+tiltY)));
-      if(button.classList.contains('is-opening')) {
-        if(!opening.has(index)) opening.set(index,now);
-        const p=Math.min(1,(now-opening.get(index))/700);
-        model=multiply(model,rotateZ(Math.sin(p*Math.PI*4)*.07));
-        model=multiply(model,translate(0,-12*p,0));
-        alpha*=1-p*.9;
-      } else opening.delete(index);
-      return {button,model,alpha,state,z:model[14]};
+      model=multiply(model,rotateY(radians(-8+tiltY+(pose?.yaw ?? 0))));
+      if(pose && !opening.anchor) {
+        // Project the center of the cut through the same lens as the foil.
+        const seamY = (.252 - .5) * 292;
+        const depth = 1 - (model[6] * seamY + model[14]) / 1000;
+        opening.seam = {
+          x: width / 2 + (model[4] * seamY + model[12]) / depth,
+          y: height / 2 + (model[5] * seamY + model[13]) / depth
+        };
+      }
+      return {button,model,alpha,state,pose,z:model[14]};
     }).filter(Boolean).sort((a,b)=>a.z-b.z);
-    for(const {button,model,alpha,state} of draws) {
+    const paint = (model, alpha, side) => {
       gl.uniformMatrix4fv(uniforms.uModel,false,model);
       gl.uniform1f(uniforms.uOpacity,alpha);
+      gl.uniform1f(uniforms.uTearSide,side);
+      gl.drawElements(gl.TRIANGLES,indexCount,gl.UNSIGNED_SHORT,0);
+    };
+    const layered = mobile.matches && draws.length > 1;
+    let layer = draws.length;
+    for(const {button,model,alpha,state,pose} of draws) {
+      // Keep depth within each foil mesh while compositing the close mobile packs back to front.
+      if(layered) {
+        gl.depthRange((layer-1)/draws.length,layer/draws.length);
+        layer--;
+      }
       gl.uniform1f(uniforms.uFocus,button===document.activeElement&&button.matches(':focus-visible')?1:0);
       gl.uniform1f(uniforms.uHover,state.hover);
       gl.uniform2f(uniforms.uLight,(state.lightX-50)/120,(state.lightY-50)/120);
-      gl.drawElements(gl.TRIANGLES,indexCount,gl.UNSIGNED_SHORT,0);
+      gl.uniform1f(uniforms.uTearLight,pose?.glow ?? 0);
+      gl.uniform1f(uniforms.uBlackout,pose?.blackout ?? 0);
+      if(!pose?.pieces) {
+        paint(model,alpha,0);
+        continue;
+      }
+      for(const { side, x, y, z, pitch, yaw, roll, opacity } of pose.pieces) {
+        if(opacity<=0) continue;
+        // Both pieces peel around the point where the tear reaches the left seam.
+        let piece = multiply(model,translate(x-90,y-61,z));
+        piece = multiply(piece,rotateZ(radians(roll)));
+        piece = multiply(piece,rotateY(radians(yaw)));
+        piece = multiply(piece,rotateX(radians(pitch)));
+        piece = multiply(piece,translate(90,61,0));
+        paint(piece,alpha*opacity,side);
+      }
     }
+    if(layered) gl.depthRange(0,1);
   };
   document.addEventListener('packs:render',event=>{
     rotation=event.detail.rotation;
+    opening=event.detail.opening;
     if(materialVersion!==event.detail.materialVersion) {
       materialVersion=event.detail.materialVersion;
       needsDraw=true;
@@ -352,14 +416,43 @@
   rail.addEventListener('focusin',focusChanged);rail.addEventListener('focusout',focusChanged);
   const resize=new ResizeObserver(()=>{
     width=rail.clientWidth;height=rail.clientHeight;
+    const button=rail.querySelector('.pack-choice');
+    if(button) {
+      const dimensions=getComputedStyle(button);
+      packScaleX=parseFloat(dimensions.width)/184;
+      packScaleY=parseFloat(dimensions.height)/292;
+    }
     const ratio=Math.min(devicePixelRatio||1,1.5);
     const pixelWidth=Math.round(width*ratio),pixelHeight=Math.round(height*ratio);
-    if(canvas.width===pixelWidth && canvas.height===pixelHeight) return;
-    canvas.width=pixelWidth;canvas.height=pixelHeight;needsDraw=true;draw();
+    if(canvas.width!==pixelWidth || canvas.height!==pixelHeight) {
+      canvas.width=pixelWidth;canvas.height=pixelHeight;
+    }
+    needsDraw=true;draw();
   });resize.observe(rail);
   canvas.addEventListener('webglcontextlost',event=>{event.preventDefault();ready=false;canvas.style.visibility='hidden';rail.classList.remove('has-pack-mesh');});
-  const logo=new Image();logo.src='assets/bp27.png?v=3b8ce97314';
-  Promise.all([logo.decode(),document.fonts.ready,programLinked()]).then(async()=>{
+  const loadLogo = async () => {
+    if (dataUrl.protocol !== 'file:') {
+      const logo = new Image();
+      logo.src = 'assets/bp27.png?v=3b8ce97314';
+      await logo.decode();
+      return logo;
+    }
+    // Drawing the local vector keeps the Canvas readbacks origin-clean on file: pages.
+    const mark = document.createElement('canvas');
+    mark.width = 1045;
+    mark.height = 200;
+    const ink = mark.getContext('2d');
+    ink.scale(10, 10);
+    ink.fillStyle = '#fff';
+    for (const path of [
+      'M0 20V0H19.4286C22.7714 0 25.5714 2.8 25.5714 6.14286C25.5714 7.6 25.0286 8.97143 24.1714 10C25.0571 11.0857 25.5714 12.4 25.5714 13.8571C25.5714 17.2286 22.7714 20 19.4286 20H0ZM19.4286 15.4286C20.2857 15.4286 21 14.7143 21 13.8571C21 13 20.2857 12.2857 19.4286 12.2857H4.57143V15.4286H19.4286ZM19.4286 7.71429C20.2857 7.71429 21 7 21 6.14286C21 5.28571 20.2857 4.57143 19.4286 4.57143H4.57143V7.71429H19.4286Z',
+      'M45.2308 4.57143H32.1451V7.71429H45.2308C46.0879 7.71429 46.8022 7 46.8022 6.14286C46.8022 5.28571 46.0879 4.57143 45.2308 4.57143ZM45.2308 12.2857H32.1451V20H27.5737V0H45.2308C48.5737 0 51.3737 2.77143 51.3737 6.14286C51.3737 9.48571 48.5737 12.2857 45.2308 12.2857Z',
+      'M52.4408 20V13.8571C52.4408 10.5143 55.2408 7.71429 58.5837 7.71429H71.5837C72.4408 7.71429 73.1551 7 73.1551 6.14286C73.1551 5.28571 72.4408 4.57143 71.5837 4.57143H52.7266V0H71.5837C74.9266 0 77.7265 2.77143 77.7265 6.14286C77.7265 9.48571 74.9266 12.2857 71.5837 12.2857H58.5837C57.7265 12.2857 57.0123 13 57.0123 13.8571V15.4286H77.7265V20H52.4408Z',
+      'M79.45 0H104.45V4.57143L90.7357 20H84.6214L98.3357 4.57143H79.45V0Z',
+    ]) ink.fill(new Path2D(path));
+    return mark;
+  };
+  Promise.all([loadLogo(),document.fonts.ready,programLinked()]).then(async([logo])=>{
     if(disposed || gl.isContextLost()) return;
     const frontPrint=makePrint(logo);
     await yieldTask();
@@ -374,7 +467,7 @@
     if(disposed || gl.isContextLost()) return;
     stopWorker();
     uploadGeometry(geometry);
-    uniforms=Object.fromEntries(['uModel','uViewport','uFront','uBack','uNormalMap','uFrontInk','uBackInk','uOpacity','uFocus','uHover','uLight'].map(name=>[name,gl.getUniformLocation(program,name)]));
+    uniforms=Object.fromEntries(['uModel','uViewport','uFront','uBack','uNormalMap','uFrontInk','uBackInk','uOpacity','uFocus','uHover','uLight','uTearSide','uTearLight','uBlackout'].map(name=>[name,gl.getUniformLocation(program,name)]));
     for(const source of [frontPrint,backPrint,normals,front,back]) {
       if(source.data) texture(source.data,source.w,source.h);
       else texture(source);

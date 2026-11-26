@@ -15,3 +15,7 @@ Source repository: https://github.com/DavidHDev/react-bits
 - License: `react-bits-LICENSE.md`.
 
 The original React source is preserved here without modification. This repository's live page uses its WebGL2 implementation through `dist/gradient-ascii.js`: constants, GLSL shaders (with a vertical coordinate flip for the requested horizon orientation), atlas construction, color conversion, and multipass rendering are preserved. React refs become plain objects, the mount effect becomes a DOM initializer, and pagehide invokes cleanup. The settings use the owner's palette and density; mouse trails and click waves are disabled as requested. No React package or shadcn setup is needed to run this native adaptation. The previously requested CLI invocation failed framework detection; it did not install the component into a React application.
+
+## Ticket interaction references
+
+The supplied React Bits HoloCard and TearTicket examples informed the ticket's moving foil, tilt, and stub that hinges, stretches its paper fibres, and falls away. The Breakpoint implementation lives in `dist/ticket-reveal.js` and `dist/styles.css` and uses native pointer events, CSS transforms, and gradients.

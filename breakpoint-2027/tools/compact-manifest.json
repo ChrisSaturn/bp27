@@ -5,67 +5,89 @@
       "source": "gradient-ascii.js",
       "output": "gradient-ascii.compact.js",
       "sourceType": "script",
-      "sourceSha256": "4722655ce267185e16141aa58f7ffb718ef2491a3ed769c2fd08c0585b4cc1a9",
-      "outputSha256": "5baddddc06493b3ed840b61f2ce9d248c214c92fa2b085835a79c617bc5b24ec",
-      "bytesBefore": 31226,
-      "bytesAfter": 27202,
-      "gzipBefore": 9357,
-      "gzipAfter": 8971
+      "sourceSha256": "d16639cc55c720de38e4073d9c2390a69303ad1ffec36d4026953071d5556dce",
+      "outputSha256": "1416a08e281aff85e5e01bf031c6f1642526e028314403da25ba1e31dfef3a03",
+      "bytesBefore": 31889,
+      "bytesAfter": 27733,
+      "gzipBefore": 9502,
+      "gzipAfter": 9110
     },
     {
       "source": "hyper-text.js",
       "output": "hyper-text.compact.js",
       "sourceType": "script",
-      "sourceSha256": "3500633bacdb397491ed51a1323efa3fdb6b5b60c34182d95de277db06aa4c73",
-      "outputSha256": "40f68c1d3cb4d86be5be395cccbb0e717c0d1eb3f0529acc7bbbc2c75d165c3d",
-      "bytesBefore": 4173,
-      "bytesAfter": 3484,
-      "gzipBefore": 1433,
-      "gzipAfter": 1347
+      "sourceSha256": "bb9474ab11f3fef8f21fa68b52fd081149a25c933a5af0ba3a41b7ea133887b5",
+      "outputSha256": "48c3d8075ba9ed64956a421255c862524b682e9acf90f2548532081ec9f84523",
+      "bytesBefore": 4184,
+      "bytesAfter": 3493,
+      "gzipBefore": 1437,
+      "gzipAfter": 1351
     },
     {
       "source": "pack-material-data.js",
       "output": "pack-material-data.compact.js",
-      "sourceType": "module",
-      "sourceSha256": "61e1fa6107bbf4bc5c7a79026e960c5bd29a22cedfaed123e7c59ca492a68b12",
-      "outputSha256": "7d9a1880847308632c1a9029b5d4125b3b630278741cd0103c645c4d203d11e8",
-      "bytesBefore": 5471,
-      "bytesAfter": 4900,
-      "gzipBefore": 1930,
-      "gzipAfter": 1855
+      "sourceType": "script",
+      "sourceSha256": "79578ef5d36a7fc26cd954fa4f81e3cad06abdac0affbd08857d7b1a2b56549f",
+      "outputSha256": "8905312415e0978bc0a067126777ae50d2407440ec54de77f59c06f7e2c5fc7c",
+      "bytesBefore": 5540,
+      "bytesAfter": 4961,
+      "gzipBefore": 1957,
+      "gzipAfter": 1877
     },
     {
       "source": "pack-renderer.js",
       "output": "pack-renderer.compact.js",
       "sourceType": "script",
-      "sourceSha256": "36d8a986274b61632e8ebeb7bbb7d34e9204afb5f4340cbdfc721f3768bce2eb",
-      "outputSha256": "55923e1b8e3c3c288c0a1ec083085ee586203fc26e450f218028de8b95e56f36",
-      "bytesBefore": 18889,
-      "bytesAfter": 17276,
-      "gzipBefore": 6568,
-      "gzipAfter": 6333
+      "sourceSha256": "354b0f8be0f4cb3b7f978856d25f664c1d37e64eb0dd28ef7b4d25fb0b7b0c50",
+      "outputSha256": "016a1acd349134945b6ad5aabc87c41a67505f41be4a29dc5173c03721fe0169",
+      "bytesBefore": 23440,
+      "bytesAfter": 21213,
+      "gzipBefore": 8068,
+      "gzipAfter": 7726
     },
     {
       "source": "pack-sound.js",
       "output": "pack-sound.compact.js",
       "sourceType": "script",
-      "sourceSha256": "8469a0d6f03e0f64be72d9a6b350455accc1846fbf316d64e7321edd8262ed5d",
-      "outputSha256": "316b1b2a68569b796c88599ce137d735b40ab7724cd9d6c414d015c62fbc2872",
-      "bytesBefore": 2942,
-      "bytesAfter": 2466,
-      "gzipBefore": 1015,
-      "gzipAfter": 951
+      "sourceSha256": "17a2f7c7aec5d06a10cfcfff02ec13ced9c064f98852cc0633ce3f8b45139fb7",
+      "outputSha256": "5ac31f017cd81a629228595a55853e54716e9f719eaf001b7116d1f49c61b6c8",
+      "bytesBefore": 7211,
+      "bytesAfter": 5902,
+      "gzipBefore": 2116,
+      "gzipAfter": 1981
     },
     {
       "source": "packs.js",
       "output": "packs.compact.js",
       "sourceType": "script",
-      "sourceSha256": "8384e27aa69a84226410a1add735144f0361a27ea4daf3818eb1b52e6a6fd496",
-      "outputSha256": "fe0d81abea254ea3a9f6273a6668af1bc7e0d887c8760188f07bde3ff68e0f66",
-      "bytesBefore": 12322,
-      "bytesAfter": 10276,
-      "gzipBefore": 3602,
-      "gzipAfter": 3363
+      "sourceSha256": "a1543fb531c357a20ab21dba3e04f6343dbca1031428ee4237095a97b1b88c60",
+      "outputSha256": "c0c5f2b67a548dc703b2c79743894a3422b8260e21bbd1dca6bafba8ceb662f1",
+      "bytesBefore": 20776,
+      "bytesAfter": 17199,
+      "gzipBefore": 5607,
+      "gzipAfter": 5216
+    },
+    {
+      "source": "ticket-flight.js",
+      "output": "ticket-flight.compact.js",
+      "sourceType": "script",
+      "sourceSha256": "b4c04052e43a0f9cb950da208f4029dfaf7d054be83039d01c0d368c561561a6",
+      "outputSha256": "e4294d3efce612ea9b387bd1136c93fc31aac4fc637d531429eacaee228b00e8",
+      "bytesBefore": 10121,
+      "bytesAfter": 8369,
+      "gzipBefore": 3458,
+      "gzipAfter": 3271
+    },
+    {
+      "source": "ticket-reveal.js",
+      "output": "ticket-reveal.compact.js",
+      "sourceType": "script",
+      "sourceSha256": "3e9cb491e19959d052b3c97568f27166af111434f485d2b705a5b629391dd003",
+      "outputSha256": "0d9597037d85301ae7ed1a10969266839027eb79a40914987918491e827d4073",
+      "bytesBefore": 19008,
+      "bytesAfter": 15650,
+      "gzipBefore": 5607,
+      "gzipAfter": 5227
     }
   ]
 }

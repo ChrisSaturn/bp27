@@ -2,20 +2,23 @@
 
 ## Experience contract
 
-The page presents the Solana/BP27 lockup, a single-line “earn a $500 ticket for” headline with a typed price sequence, and ten identical purple packs on a cylindrical roulette. The fixed $500 value and animated price use ABC Favorit Bold; remaining text uses Regular. The prefix has an intro glitch and repeats it on opening, without a hover trigger. The price types $100, holds briefly, deletes to type $75, waits one second, then deletes to type $50 and stays there. It scales to 52px on desktop and 24px on mobile. The Open control is small and rounded; the borderless dice has a heavier 24px icon and a 44px hit target.
+The page presents the Solana/BP27 lockup, an “earn a $500 ticket for” headline with a typed price sequence, and ten identical purple packs on a cylindrical roulette. The fixed $500 value and animated price use ABC Favorit Bold. The prefix glitches on intro and opening. The price types $100, holds briefly, deletes to type $75, waits one second, then deletes to type $50 and stays there. The headline stays on one line up to 52px on desktop. At widths up to 600px it is centered on two lines at 32–44px, with the purchase price on the second line.
 
-Every pack opens the same local event-ticket illustration. Selection and dice randomness are aesthetic only. There is no payment, wallet connection, ticket issuance, real prize draw, or persisted reward. Per the owner's request, the page does not show demo/preview wording or a label beneath the packs.
+Every pack opens the same Breakpoint event ticket in a roulette reveal that ends with the $50 Legendary pull. Open pack opens the centered pack directly. The reveal sweeps through 21 priced tickets from left to right. It slows at the $500 Common ticket and then settles on Legendary. The result links to the Breakpoint event on Luma with the `bp27-vibhu` code.
 
 ## Files and runtime
 
 - `dist/index.html`: semantic heading, logos, carousel region, controls, and native ticket dialog.
 - `dist/styles.css`: font faces, masked perspective viewport, CSS foil-pack depth, responsive layout, and ticket styling.
-- `dist/packs.js`: cylindrical positioning, idle motion, drag/keyboard navigation, quintic dice spin, pack opening, and dialog behavior.
+- `dist/packs.js`: cylindrical positioning, drag and keyboard navigation, direct pack opening, and dialog behavior.
+- `dist/ticket-reveal.js`: ticket roulette, Legendary pull indicator, pointer-driven reflection, tear-off stub, and dialog reset.
+- `dist/ticket-flight.js`: idle-time ticket artwork baking and a 48-triangle WebGL paper mesh.
 - `dist/pack-renderer.js`: shared native WebGL2 pouch drawing, artwork, material setup, and lighting.
 - `dist/pack-material-data.js`: worker/shared fallback for exact mesh and numeric normal-map generation.
 - `serve.py` (repository root): loopback-only static delivery with gzip and verified fingerprint caching.
 - `dist/hyper-text.js`: prefix glitch and native price typing/deleting sequence.
-- `dist/pack-sound.js`: procedural Web Audio clicks synchronized to pack selection.
+- `dist/pack-sound.js`: Web Audio playback for the selection clicks, foil rip, flash impact, ticket launch, and stub tear.
+- `dist/assets/audio/`: trimmed Kenney recordings for the opening and stub cues.
 - `dist/gradient-ascii.js`: original React Bits WebGL2 rendering adapted to native DOM mounting.
 - `dist/assets/bp27.png`, `dist/assets/solana.svg`, and the font assets: local branding resources.
 - `vendor/GradientASCII.jsx` / `.css`: unchanged original renderer reference.
@@ -30,13 +33,13 @@ Interaction reference: https://jup.ag/gacha/packs/pokemon_10
 
 The flat scrolling row is replaced by a perspective viewport and a preserved-3D cylinder. Ten packs are positioned every 36 degrees around a responsive radius. Their shared WebGL geometry has a curved inflated body, sealed top/bottom bands, and joined edge surfaces, with roughly 1.3–2px folded-edge thickness and about 22–24px central thickness in model units. All packs share identical foil artwork and materials. The cylinder translates back by its radius so the front pack stays at the intended scale; a slight X-axis inclination adds curvature to the orbit. Edge masking and angle-based opacity let packs recede and disappear at the rear. Hidden rear packs do not intercept pointers.
 
-A single requestAnimationFrame loop renders rotation. Idle movement advances exactly one 36-degree slot over 1.2 seconds with quintic easing, then holds the centered pack for 2.2 seconds. Hover, keyboard focus, dragging, opening, a visible ticket dialog, hidden tabs, or offscreen placement prevent a new idle step; an already-started idle step completes its alignment instead of freezing between packs. The dice makes at least two full turns over 5.2 seconds with quintic ease-out (`1 - (1 - t)^5`), continuously interpolating the angle rather than jumping between indices. Its icon uses the same easing. The chosen index aligns exactly at the front; idle motion pauses for three seconds after settling. The dice choice does not affect the revealed ticket.
+The pack carousel starts still and turns in response to selection or dragging. A single requestAnimationFrame loop draws rotation with quintic ease-out (`1 - (1 - t)^5`) on selection and snap-back. Open pack opens the centered pack in place.
 
-Clicking a pack aligns it with a 750ms eased turn. Horizontal pointer dragging rotates the cylinder; release snaps to the nearest pack. Vertical touch scrolling remains native. Arrow keys wrap between neighbors, Home/End align the first/last pack, and focus follows keyboard selection. Opening aligns the nearest pack before its reveal. Controls are locked during turns and opening to avoid overlapping actions.
+Clicking a pack aligns it with a 750ms eased turn. Horizontal pointer dragging rotates the cylinder, and release snaps to the nearest pack. Vertical touch scrolling remains native. Arrow keys wrap between neighbors, Home and End align the first and last pack, and focus follows keyboard selection. If the carousel goes offscreen during a user-triggered turn, it settles on the chosen pack so the action can finish while the page is visible.
 
 Fine pointers retain bounded ±3° X / ±4° Y hover tilt, at most 1.5px artwork parallax, a 12px lift, 4.5% hover enlargement, and a visible moving reflection. These reset on leave, cancellation, locking, or preference changes. Filtering stays outside each 3D root because applying it to that root would flatten side geometry.
 
-Reduced motion disables idle movement, parallax, dice/open animations, and text scrambling; selections update immediately. Native dialog semantics provide Escape dismissal and focus containment. Closing returns focus to Open. The headline has a stable accessible label with decorative animated glyphs hidden from assistive technology. A polite status announces user-triggered selections without narrating idle rotation. The glitch effect creates temporary character spans only while animating and restores ordinary text/strong markup afterward, so the resting headline is a normal text run rather than permanently fragmented glyphs.
+Reduced motion disables parallax, opening and ticket animations, and text scrambling. Open pack shows Legendary immediately. Native dialog semantics provide Escape dismissal and focus containment. Closing returns focus to Open pack. The headline has a stable accessible label with decorative animated glyphs hidden from assistive technology. A polite status announces user-triggered selections. The glitch effect creates temporary character spans only while animating and restores ordinary text and strong markup afterward.
 
 ## ASCII background
 
@@ -56,7 +59,7 @@ The official header was measured at 104.45 × 20px for its BP26 asset and 22.68 
 
 The parent repository owns the website files; ignored `.sites-publish` is a separate hosting synchronization checkout. This review remains local.
 
-Run `node --check` on all five browser scripts and `git diff --check`. Browser review should verify continuous curved motion, back-facing disappearance, exact dice settling, locked controls during spins, drag release, keyboard wrap, opening, restored intro glitch, reduced motion, and mobile overflow.
+Run `node --check` on the browser scripts and `git diff --check`. Browser review should verify the still carousel at rest, drag release, keyboard wrap, opening the centered pack, ticket roulette alignment and stub reset, restored intro glitch, reduced motion, and mobile overflow.
 
 Browser verification confirmed that a dice spin ended at -936° with pack 7 centered and controls re-enabled. A 140px drag rotated 28° and settled at 36° (pack 10). Reduced-motion selection completed instantly with unlocked controls. At 390 × 844 there was no horizontal overflow, the headline measured 22.23px, and the ASCII layer began at 405px, leaving the upper 48% dark. Opening displayed the ticket, Escape closed it, and focus returned to Open. The intro glitch was observed immediately after reload. The native browser view confirmed branding and headline remain visible above the cylinder.
 
@@ -64,23 +67,57 @@ The headline repaint regression was corrected by restoring its original HTML tex
 
 ## Soft edges, focal selection, and controls
 
-The roulette viewport uses intersecting horizontal and vertical alpha gradients, replacing the hard rounded clip. A pack's emphasis is derived continuously from its angular distance to the front: a Gaussian weight drives up to 15% extra scale and 6px lift. This avoids a jump when the selected index changes mid-rotation. The viewport is 420px tall on desktop and 360px on mobile to allow enlarged packs room within the feathered boundary.
+The roulette viewport uses intersecting horizontal and vertical alpha gradients. A pack's emphasis is derived continuously from its angular distance to the front: a Gaussian weight drives up to 15% extra scale and 6px lift. This avoids a jump when the selected index changes mid-rotation. The viewport is 420px tall on desktop. On mobile it centers between the headline and controls, with pack width and rail height adapting to the available screen dimensions.
 
-Open uses the loaded Bold face with a gentle color, lift, and shadow hover response; reduced motion omits movement. Keyboard focus uses a tinted Open pill with a small inset lower accent, a short underline on the dice, highlighted foil seals for pack buttons, and a lighter close-button fill. These replace the former external focus outline while retaining visible tab navigation cues.
+Open pack uses the loaded Bold face with a gentle color, lift, and shadow hover response. Reduced motion omits movement. On mobile, the button spans the available width up to 27rem at the bottom of the stage. It has a minimum 56px touch height, a keyboard focus ring, and padding for device safe areas. The headline sits between the logo and the foil packs, with its top gap growing on taller screens. The stage grows when the content is taller than the viewport so the button remains reachable by scrolling. Desktop uses a compact Open pack pill.
 
 The ASCII script is preloaded, starts its reveal at 15%, and completes the remainder of its intro in about 0.55 seconds (`INTRO_SECONDS = 0.65`), down from 2.4 seconds. The lower background placement and darkness remain unchanged.
 
-Browser verification measured a 1.15 scale on the centered pack versus approximately 1.006 on its neighbor, a 700-weight Open label, and no external focus outline. Both gradient masks were active. At 390 × 844 the 360px roulette viewport had no horizontal overflow and the centered pack remained fully readable within the fade.
+At 390 × 844, the carousel held its initial angle. After keyboard selection, Open pack opened the centered pack at that same angle. Closing restored focus to the 56px button.
 
-## Procedural selection sound
+## Pack audio
 
-`pack-sound.js` creates a short band-limited noise transient and a rapidly decaying triangle oscillator using native Web Audio. No audio downloads, packages, or global installations are used. One shared AudioContext is created/resumed only on trusted pointer/key interaction; selection events before that are silent. Audio suspends while the document is hidden and resumes only an already-created context when visible. Unsupported or blocked audio does not affect the carousel.
+`pack-sound.js` uses a shared AudioContext created on trusted pointer or keyboard interaction. Audio suspends while the document is hidden and resumes an already-created context when visible. Unsupported or blocked audio leaves the carousel operable.
 
-`packs.js` dispatches `pack:tick` when the nearest front-facing slot changes, including during idle motion, dragging, keyboard alignment, and dice spins. Re-selecting the current pack also ticks once. Multiple crossings in a slow frame are capped at three; synthesis is rate-limited to 12ms spacing with no stale click queue. Temporary nodes disconnect after their roughly 32ms lifetime. Volume is deliberately restrained.
+`packs.js` dispatches `pack:tick` when the nearest front-facing slot changes during manual selection and dragging. Re-selecting the current pack also ticks once. The ticket reel uses the same cue at launch and as each preview crosses center. The clicks spread farther apart as the reel decelerates. Legendary uses its own winner cue. Each click uses a band-limited noise transient and a decaying triangle oscillator. Multiple crossings in a slow frame are capped at three, with at least 12ms between clicks and no stale click queue.
+
+The opening, winner, and stub cues use recordings from Kenney's Casino Audio, Impact Sounds, and Interface Sounds packs, all licensed CC0. The clips are trimmed near the first transient and encoded as mono MP3s.
+
+| Animation cue | Kenney source |
+| --- | --- |
+| Foil begins to split | Casino Audio · `cards-pack-open-2.ogg` |
+| Full-screen flash begins | Impact Sounds · `impactPunch_heavy_002.ogg` |
+| The ticket launches as the flash clears | Casino Audio · `cards-pack-take-out-1.ogg` |
+| Legendary lands | Interface Sounds · `confirmation_001.ogg` |
+| The stub separates along its perforations | Casino Audio · `card-slide-4.ogg` |
+
+## Pack opening and holographic ticket
+
+On Open pack, the intact pouch shrinks and shakes for 760ms on the carousel frame clock while the background, headline, and button gradually dim. The foil starts to separate along the same jagged seam with quintic ease-out (`1 - (1 - t)^5`). A single full-viewport white flash starts 32ms into the split and runs for 75ms. Rip and burst sounds use the same frame clock and the gesture-gated AudioContext.
+
+The opening uses the live pouch mesh through the flash. At the tear, complementary clips show the two halves of the foil. During the pulse the selected foil draws solid black against the white viewport, with the carousel mask and neighboring packs hidden. The frame that clears the flash launches the ticket and the violet afterglow. While the dialog is open, the carousel artwork is hidden in both WebGL and CSS, leaving the impact particles and backdrop behind the ticket. Closing restores the carousel and scene brightness. Direct file loading uses the shared numeric kernels in a classic script and draws the BP27 vector into a local canvas to keep the material maps origin-clean.
+
+The ticket rises face-on out of the seam for 240ms, with a brief bend and crossfade from the cached 48-triangle WebGL strip when available. The horizontal reel sweeps through 19 preview prices across Prism, Aurora, Sapphire, and Rose foils in 2.86 seconds. It then creeps past the silver $500 Common pull for 920ms. The last 480ms accelerate off Common and brake with quintic ease-out at the $50 Legendary ticket. Five reusable preview tickets cover the visible strip. The browser animates the strip while the frame clock scales previews and recycles each one outside the viewport. The live ticket and reel share responsive sizing and perforation outlines. At the handoff, the live ticket and prices match the reel at 90% scale and punch up to 107% before settling. Confetti, the plain Legendary Pull label, and the 286ms confirmation cue start with the impact.
+
+The live ticket uses the Solana and BP27 marks, ABC Favorit, the San Francisco event details, and pointer-driven tilt and reflection adapted from the React Bits HoloCard reference. Preview and result prices share a responsive size of 1.75–2.25rem. The result shows the crossed-out $500 at 70% of the $50 offer size, to its left. The result is announced when Claim Now becomes visible. The link sits below the price row with a 56px touch target and visible keyboard focus. It opens Luma in a new tab. Reduced motion presents the result directly. Closing cancels the reveal and restores Prism for the next opening.
+
+The live ticket face clips the foil and emblem to its rounded outer corners, matching the shape baked into the flight texture. The TearTicket adaptation cuts matching perforations into the adjoining edges and anchors the stub at the corner opposite the grab. As the stub pivots, the fibres stretch and snap progressively. A short pull springs back. Once free, the stub stays in the pointer's grip until released, then falls with the release momentum while the face recenters. Closing resets the ticket. Reduced motion skips the wrapper and ticket flight and removes the stub immediately when dragged far enough to tear.
+
+Local browser checks verified full viewport coverage, one flash, solid black foil during the pulse, and the ticket launch on the frame that clears the flash. At 320 × 568 the 286ms confirmation cue played at the winning impact and confetti fired. The price row and 56px Claim Now control fit without horizontal overflow. Claim Now stayed hidden during the $500 Common pull, then received keyboard focus after Legendary landed. Enter opened Luma with the event code intact.
+
+### Opening preparation
+
+After page load, an idle task builds one reusable burst, one pair of CSS fallback foil pieces, the ticket reel, and 36 confetti pieces. The ticket lays out its perforations while hidden. Once the fonts and marks are ready, the flight renderer bakes the texture at the current ticket size and uploads it at a pixel density capped at 1.25. The delivery script inlines the two existing vector marks so they can be used in the texture when opening the page directly from disk. The same preparation can run at the start of the charge if the user opens before the idle task. The WebGL pouch and shaders initialize at startup. The animated split updates two existing poses, and the burst frame positions and shows the prepared layer.
+
+The delivery script inlines the recordings to support playback over HTTP and from a local file. The browser decodes them into reusable Web Audio buffers during idle preparation or on the first interaction. Rip, impact, winner, and stub tear have synthesized fallbacks if their recording is unavailable. The ASCII background holds its last frame from opening until the dialog closes so the pack and ticket can use the rendering budget.
+
+Earlier before/after openings in local Chromium at 390 × 844 and 4× CPU throttling recorded 635–645 ASCII draw calls per opening before preparation and zero after. Each prepared run used two audio buffers for the rip and burst.
+
+Three ticket-flight runs at 390 × 844 and 4× CPU throttling recorded one texture upload before launch and zero during flight, with 95th-percentile frame intervals of 17.4–17.5ms and no interval above 25ms. Browser checks also confirmed the perspective-only fallback, keyboard stub tear, and desktop and mobile layouts. Frame intervals were measured on the development browser with CPU emulation.
 
 ## Typed price sequence
 
-Initial HTML and metadata read “earn a $500 ticket for $100” as a no-JavaScript fallback. Once fonts are ready, the price types at 95ms per character, pauses at $100 for 700ms, erases at 45ms per character, types $75, holds for exactly one second, erases, and types $50. The final price stays at $50; there is no looping. A fixed 4.5ch price slot avoids shifting the headline while typing. The caret disappears on completion. The heading's accessible label updates only for completed values, not each keystroke.
+Initial HTML and metadata read “earn a $500 ticket for $100” as a no-JavaScript fallback. Once fonts are ready, the price types at 95ms per character, pauses at $100 for 700ms, erases at 45ms per character, types $75, holds for exactly one second, erases, and types $50. The final price stays at $50. Desktop reserves 4.5ch for the price while mobile centers the full second line as the price changes. The caret disappears on completion. The heading's accessible label updates on completed values.
 
 The prefix's 600ms glitch is isolated from the price node, so opening a pack cannot reset or corrupt the ongoing price sequence. Hover does not animate the heading. Reduced motion or backgrounding completes the price at $50 and cancels animation timers. Resize restores the prefix without restarting the price sequence. All timers are canceled on pagehide.
 
@@ -94,7 +131,7 @@ The primary pack visuals now use one shared WebGL2 canvas for the entire carouse
 
 Two 1024 × 1536 procedural color maps carry the foil artwork, logo, text, seals, and rear printing. A 512 × 768 normal/roughness map adds smaller irregular wrinkles and fine surface response. The fragment shader combines these with geometric normals, a directional light, view-dependent metallic highlights, and Fresnel edge reflection. Printed white ink has reduced specularity for readability. All maps are generated in browser memory using native Canvas 2D and typed arrays; the existing local logo and fonts are reused. Numeric kernels run in a native worker during startup, with the same code available as a cooperative main-thread fallback. No image-generation service, remote texture download, npm package, or global software installation is required.
 
-`packs.js` emits `packs:render` with the current rotation from the existing animation loop. The renderer uses the same radius, perspective, center weighting, hover angles, and mobile dimensions as the DOM controls. Thus the roulette, click targets, keyboard navigation, dice easing, audio crossings, and opening state retain their existing behavior. The mesh mirrors the opening fade and shake. DOM buttons retain names and focus behavior; a shader tint supplies keyboard focus feedback while their decorative CSS artwork uses display: none during mesh rendering. The WebGL canvas ignores pointers and assistive technology.
+`packs.js` emits `packs:render` with the current rotation from the existing animation loop. The renderer uses the same radius, perspective, center weighting, and hover angles as the DOM controls. It reads the resolved button dimensions when the rail resizes so the mesh and touch targets stay aligned at each viewport size. The mesh supplies the selected pouch artwork for the opening sequence. DOM buttons retain names and focus behavior. A shader tint supplies keyboard focus feedback while their decorative CSS artwork is hidden during mesh rendering. The WebGL canvas ignores pointers and assistive technology.
 
 Only one additional WebGL context and one set of shared maps/buffers are used for all ten packs. Pixel density is capped at 1.5. There is no second animation loop: rendering follows carousel state events, resize, asset readiness, and focus changes. Source geometry and GPU resources are released on pagehide. The existing CSS packs remain the fallback if WebGL2, shader setup, assets, or the GPU context are unavailable; a lost material context is hidden until reload.
 
@@ -106,15 +143,15 @@ The resting pouch has an 8-degree local yaw so its side depth is visible even wh
 
 ## Centered stops and transparent sides
 
-The carousel now uses indexed idle advances instead of unbounded slow drift. Each idle move ends at an exact multiple of 36 degrees and dwells with one pack centered. Hover/focus do not freeze a step midway. User selection, dragging, dice, and opening may interrupt an idle move; release, selection, and opening realign to a slot. An idle move does not lock controls, preserving immediate interaction. During the smooth transition between two slots, packs still move through the cylindrical path; the centered hold applies to every stop rather than freezing one pack while the ring moves behind it.
+A completed manual turn aligns the chosen pack at an exact multiple of 36 degrees. The pack stays centered until the next selection or drag.
 
 The side alpha mask now has a broader, multi-stop fade on both edges, reaching full opacity only across the central 32% of the viewport. This applies to the shared WebGL canvas and CSS fallback alike, revealing the background rather than painting a black overlay. The existing vertical fade remains.
 
 Text selection, image dragging, and touch text callouts are disabled only inside `.pack-rail`; native `selectstart` and `dragstart` are prevented there. Headline and other page text retain normal selection behavior. Pack keyboard navigation and vertical touch scrolling remain available.
 
-The mobile side mask keeps the central 48% fully opaque so the enlarged focal pack stays readable. Modified carousel scripts and styles use content-hash query keys in `index.html` to refresh existing local previews.
+On mobile the orbit radius is 45% of the rail width, spreading neighboring packs farther apart around the centered pack. The CSS fallback layers the projected packs by facing angle, and WebGL assigns a separate depth range to each pack in back-to-front order. Both retain the 3D shape of each pack and prevent neighboring foil surfaces from intersecting. The central 82% of the rail stays opaque, with a short fade at each side.
 
-Selection and dice targets are explicitly quantized to 36-degree slots, and the animation assigns its exact target on completion. This prevents floating-point remainders from leaving the final selection slightly off-center.
+Selection targets are quantized to 36-degree slots, and the animation assigns its exact target on completion. This prevents floating-point remainders from leaving the final selection slightly off-center.
 
 Browser checks verified keyboard selection finishes at exactly -36° (pack 2), the following idle advance finishes at exactly -72° (pack 3), and controls remain usable. Dragging across a pack produced no text selection; the card computed to `user-select: none` while the headline retained `auto`.
 
@@ -188,7 +225,7 @@ The staged work and before/after evidence are tracked in [the remediation log](a
 
 ### Startup work
 
-A 4× CPU profile identified numeric ink/foil normals and mesh construction as substantial main-thread startup costs. `pack-material-data.js` contains the exact prior 96 × 96 mesh and map kernels, now called through one native module worker that starts alongside font decoding and asynchronous shader linking. Canvas artwork and font rasterization stay on the main thread. Height masks are cloned into the worker so failures leave fallback input intact; result typed arrays transfer back, and the worker terminates after setup. On worker unavailability/error, the same helper executes in bounded geometry/16-row normal chunks with scheduler.yield or a timer fallback. Texture uploads are separated by yields. Cancellation stops pending work on pagehide/context loss.
+A 4× CPU profile identified numeric ink/foil normals and mesh construction as substantial main-thread startup costs. `pack-material-data.js` contains the prior 96 × 96 mesh and map kernels. A native worker starts alongside font decoding and asynchronous shader linking. Canvas artwork and font rasterization stay on the main thread. Height masks are cloned into the worker so failures leave fallback input intact; result typed arrays transfer back, and the worker terminates after setup. On worker unavailability/error, the same helper executes in bounded geometry/16-row normal chunks with scheduler.yield or a timer fallback. Texture uploads are separated by yields. Cancellation stops pending work on pagehide/context loss.
 
 Native validation confirmed identical geometry, indices, foil normals, and full-resolution ink-normal output against the pre-change kernels. Shader source, map resolution, mesh detail, pixel-density caps, and animation timing remain unchanged. Browser review confirmed the numeric kernels disappeared from the main-thread profile with the visual mesh intact. The isolated startup-only Lighthouse mobile checkpoint scored 99, with TBT 50ms, before applying delivery or asset changes.
 

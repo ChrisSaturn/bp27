@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 import argparse
+import base64
 import hashlib
 import json
 from pathlib import Path
 import re
 import subprocess
+from urllib.parse import quote
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -68,6 +70,10 @@ def prepare(parser=None):
           fetchpriority="high"
         />''', 1)
     page = ASSET_URL.sub(lambda match: fingerprint(match[0]), page)
+    for mark, source in {"solana": DIST / "assets/solana.svg", "bp27": ROOT / "brand/bp27.svg"}.items():
+        # Inline these marks so the ticket texture stays origin-clean on file: pages.
+        data = "data:image/svg+xml," + quote(source.read_text().strip(), safe=" ,=:/")
+        page = re.sub(fr'(data-ticket-mark="{mark}" src=")[^"]+(")', lambda match: match[1] + data + match[2], page)
 
     css = css_path.read_text()
     if "</style" in css.lower():
@@ -77,6 +83,16 @@ def prepare(parser=None):
     page, count = style_pattern.subn(lambda _: style_block, page, count=1)
     if count != 1:
         raise ValueError("Could not locate the stylesheet boundary in index.html")
+
+    audio_bank = {
+        name: base64.b64encode((DIST / "assets/audio" / f"{name}.mp3").read_bytes()).decode("ascii")
+        for name in ("rip", "burst", "reveal", "stub", "win")
+    }
+    audio_json = json.dumps(audio_bank, separators=(",", ":"))
+    audio_pattern = re.compile(r'(<script type="application/json" id="pack-audio">).*?(</script>)', re.S)
+    page, count = audio_pattern.subn(lambda match: match[1] + audio_json + match[2], page, count=1)
+    if count != 1:
+        raise ValueError("Could not locate the audio bank in index.html")
 
     def script_url(match):
         source = match["name"].replace(".compact.js", ".js")
@@ -88,6 +104,6 @@ def prepare(parser=None):
 
 
 if __name__ == "__main__":
-    args = argparse.ArgumentParser(description="Synchronize inline CSS, fingerprinted local URLs, and optional validated compact scripts.")
+    args = argparse.ArgumentParser(description="Synchronize inline CSS and audio, fingerprinted local URLs, and optional validated compact scripts.")
     args.add_argument("--parser", help="Path to an already-installed Acorn module; omit to use fresh compact artifacts or original scripts.")
     prepare(args.parse_args().parser)

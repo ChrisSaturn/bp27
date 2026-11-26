@@ -6,7 +6,7 @@ Run from the repository root after changing authored scripts, styles, or assets:
 python3 breakpoint-2027/tools/prepare-site.py
 ```
 
-This synchronizes asset SHA-256 URLs, copies the exact authored styles.css into the marked head style block, and selects compact scripts only if their source/output fingerprints still match the manifest. Edited sources with stale compact artifacts are served as original scripts instead. Fonts, imagery, worker helper, preload, and script URLs must share matching fingerprints for immutable caching. The original full-resolution PNG stays in material generation; DOM logos use the small responsive PNGs.
+This synchronizes asset SHA-256 URLs, copies the exact authored styles.css into the marked head style block, and selects compact scripts only if their source/output fingerprints still match the manifest. Edited sources with stale compact artifacts are served as original scripts instead. Fonts, imagery, worker helper, preload, and script URLs must share matching fingerprints for immutable caching. The original full-resolution PNG stays in pack material generation. The carousel uses small responsive PNGs, and the ticket inlines the Solana and BP27 vectors for origin-clean Canvas rendering. The tool embeds the five MP3s in `dist/assets/audio/` in the `pack-audio` data block so a local file can decode them without making network requests.
 
 The committed site runs without Node or a parser build step. Optional regeneration of conservative compact scripts requires an already-installed Acorn module passed explicitly; it never downloads or installs anything:
 

@@ -525,6 +525,7 @@ const mount = () => {
     let raf = 0;
     let last = 0;
     let visible = true;
+    let openingPack = false;
     let disposed = false;
     let ready = !parallel;
 
@@ -726,7 +727,7 @@ const mount = () => {
 
     const frame = now => {
       raf = 0;
-      if (disposed || !visible || document.hidden) return;
+      if (disposed || !visible || document.hidden || (openingPack && ready)) return;
       if (!ready) {
         if (!gl.isContextLost() && !linked()) {
           raf = requestAnimationFrame(frame);
@@ -753,13 +754,13 @@ const mount = () => {
       }
       updateInput(dt);
       draw();
-      const busy = !reduce || introClock < 1 || clicks.length > 0 || trail.length > 0;
+      const busy = !openingPack && (!reduce || introClock < 1 || clicks.length > 0 || trail.length > 0);
       if (busy) raf = requestAnimationFrame(frame);
       else last = 0;
     };
 
     function wake() {
-      if (!raf && !disposed && visible && !document.hidden) raf = requestAnimationFrame(frame);
+      if (!raf && !disposed && visible && !document.hidden && (!openingPack || !ready)) raf = requestAnimationFrame(frame);
     }
 
     const locate = event => {
@@ -804,6 +805,19 @@ const mount = () => {
       last = 0;
       wake();
     };
+    const dialog = document.querySelector('.reveal-dialog');
+    const pauseForOpening = () => {
+      openingPack = true;
+      if (ready) {
+        cancelAnimationFrame(raf);
+        raf = 0;
+      }
+      last = 0;
+    };
+    const resumeAfterOpening = () => {
+      openingPack = false;
+      wake();
+    };
 
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(container);
@@ -818,6 +832,8 @@ const mount = () => {
     if (settingsRef.current.mouseInteraction) window.addEventListener('pointermove', onPointerMove, { passive: true });
     if (settingsRef.current.clickEffect) window.addEventListener('pointerdown', onPointerDown, { passive: true });
     document.addEventListener('visibilitychange', onVisibility);
+    document.addEventListener('pack:open', pauseForOpening);
+    dialog?.addEventListener('close', resumeAfterOpening);
     resize();
     wakeRef.current = wake;
 
@@ -831,6 +847,8 @@ const mount = () => {
       window.removeEventListener('pointermove', onPointerMove);
       window.removeEventListener('pointerdown', onPointerDown);
       document.removeEventListener('visibilitychange', onVisibility);
+      document.removeEventListener('pack:open', pauseForOpening);
+      dialog?.removeEventListener('close', resumeAfterOpening);
       [fieldTarget, haloA, haloB].forEach(target => {
         target.textures.forEach(texture => gl.deleteTexture(texture));
         gl.deleteFramebuffer(target.framebuffer);

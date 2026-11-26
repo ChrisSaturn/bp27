@@ -37,7 +37,7 @@
     }
     const widths = characters.map(({span}) => span.getBoundingClientRect().width);
     characters.forEach(({span}, i) => { span.style.width = `${widths[i]}px`; });
-    prefix.style.width = `${width}px`;
+    if (width) prefix.style.width = `${width}px`;
     const started = performance.now();
     let lastTick = -1;
     const update = now => {
